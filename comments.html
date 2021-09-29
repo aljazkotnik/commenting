@@ -104,63 +104,9 @@ For comments the information should be the number of comments, number of contrib
   <div class="label">Label 3</div>
   <div class="view" style="width:300px; height:200px; opacity:0.001;"></div>
   <div class="description"></div>
-  <div class="commenting">
-    <div class="comment-form"></div>
-	<hr>
-    <div class="comments"></div>
-  </div>
 </div>
 
-<script type="module">
- 
-  // Make teh form functionality.
-  import AddCommentForm from "./src/AddCommentForm.js";
-  import Comment from "./src/Comment.js"; 
-  
-  // When this changes The comments should change also.
-  let comments = [];
-  let commenting = document.querySelector("div.commenting");
-  
-  // Make the form;
-  let generalCommentForm = new AddCommentForm();
-  commenting.querySelector("div.comment-form").appendChild(generalCommentForm.node);
-  generalCommentForm.addNewComment = function(config){
-    let c = new Comment(config);
-	commenting.querySelector("div.comments").appendChild(c.node);
-	comments.push(c);
-  } // addNewComment
-  
-  
-  // There should be a reply form as well. Should the comments in general be in reverse order? At some point the sorting of comments will be needed also. Should secondary comments be visible straight away, or should they be added only after expanding replies? Eventually the comment owner should have the ability to edit their comment, like on stackexchange?
-  
-  
-  // Add the login info.
-  let login = document.querySelector("div.login").querySelector("input");
-  login.oninput = function(){
-	generalCommentForm.user = login.value;
-	comments.forEach(comment=>{
-	  comment.user = login.value;
-	  comment.update();
-	}) // forEach
-  } // oninput
-  
-  /*
-   - Make a dataset of some test comments that get pushed from the server?
-   - Second level comments.
-   - Arranging the comments in hte right order.
-   - Textarea should be the whole width available
-   - Tags to differentiate discussions!
-  */
- 
- 
- 
-  let sampleComments = [
-    {author: "Aljaz", text: "This is a test comment to allow work on styling etc.", upvotes: ["Hanna", "Bram", "George"], downvotes: ["Pawel"]},
-	{author: "Graham", text: "Good work.", upvotes: ["Hanna", "Bram", "George", "Pawel"]}
-  ]
-  
-  // How to append these comments when they arrive? Maybe that is for the general comment manager class to implement? And the comment itself should take care of its replies. So there should be a primary comment class, and a secondary comment reply. And the comment should append or remove the secondary ones as needed. Then the primary comments can just be sorted in the time order, or if needed some can be fitlered out.
-</script>
+<script type="module" src="main.js"></script>
 
 </body>
 </html>

@@ -66,70 +66,72 @@ export default class Comment{
 	// Only the time is allowed to be updated (if it will be calculated back), and the up and down votes.
 	let obj = this;
 	
-	updateTimestamp();
+	obj.updateTimestamp();
 	
-	updateVoteCounter("upvote");
-	updateVoteCounter("downvote");
-	
-	
-	
-	function updateTimestamp(){
-		
-		let timestamp = obj.node
-		  .querySelector("div.header")
-		  .querySelector("span.timestamp");
-		
-		// Dates are saved as strings for ease of comprehension. For formatting they are first translated into miliseconds passed since 1970.
-		let t = obj.config.time;
-		let now = Date.now();
-		let stamp = Date.parse(t);
-		
-		let dayInMiliseconds = 1000*60*60*24;
-		let todayInMiliseconds = getDayInMiliseconds(now);
-		
-		// Format the time so that it shows everything from today as n minutes/hours ago, everything from yesterday as yesterday at :... and everything else as the date. 
-		if( stamp > now - todayInMiliseconds ){
-			// This was today, just report how long ago.
-			timestamp.innerText = getAgoFormattedString(now - stamp);
-		} else if (stamp > now - todayInMiliseconds - dayInMiliseconds){
-			// Yesterday at HH:MM
-			timestamp.innerText = `Yesterday at ${t.split(" ").splice(4,1)[0]}`;
-		} else {
-			// Just keep the first 4 parts which should be day name, month name, day number, year number
-			timestamp.innerText = t.split(" ").splice(0,4).join(" ")
-		} // if
-		
-	} // updateTimestamp
-	
-	
-	function updateVoteCounter(buttonClassName){
-		
-		let button = obj.node
-		  .querySelector("div.footer")
-	      .querySelector(`button.${ buttonClassName }`)
-		
-		
-		let icon = button.querySelector("i.fa");
-		let counter = button
-		  .querySelector("i.vote-number");
-		
-		let n = 0;
-		switch( buttonClassName ){
-		  case "upvote":
-		    n = obj.config.upvotes.length;
-			counter.innerText = n > 0 ? n : "";
-			icon.style.color = obj.config.upvotes.includes(obj.user) ? "green" : "black";
-		    break;
-		  case "downvote":
-		    n = obj.config.downvotes.length;
-			counter.innerText = n > 0 ? -n : "";
-			icon.style.color = obj.config.downvotes.includes(obj.user) ? "tomato" : "black";
-			break;
-		} // swithc
-	
-	} // updateVoteCounter
+	obj.updateVoteCounter("upvote");
+	obj.updateVoteCounter("downvote");
 	
   } // update
+	
+  updateTimestamp(){
+	let obj = this;
+	
+	let timestamp = obj.node
+	  .querySelector("div.header")
+	  .querySelector("span.timestamp");
+	
+	// Dates are saved as strings for ease of comprehension. For formatting they are first translated into miliseconds passed since 1970.
+	let t = obj.config.time;
+	let now = Date.now();
+	let stamp = Date.parse(t);
+	
+	let dayInMiliseconds = 1000*60*60*24;
+	let todayInMiliseconds = getDayInMiliseconds(now);
+	
+	// Format the time so that it shows everything from today as n minutes/hours ago, everything from yesterday as yesterday at :... and everything else as the date. 
+	if( stamp > now - todayInMiliseconds ){
+		// This was today, just report how long ago.
+		timestamp.innerText = getAgoFormattedString(now - stamp);
+	} else if (stamp > now - todayInMiliseconds - dayInMiliseconds){
+		// Yesterday at HH:MM
+		timestamp.innerText = `Yesterday at ${t.split(" ").splice(4,1)[0]}`;
+	} else {
+		// Just keep the first 4 parts which should be day name, month name, day number, year number
+		timestamp.innerText = t.split(" ").splice(0,4).join(" ")
+	} // if
+	
+  } // updateTimestamp
+
+
+  updateVoteCounter(buttonClassName){
+	let obj = this;
+	
+	let button = obj.node
+	  .querySelector("div.footer")
+	  .querySelector(`button.${ buttonClassName }`)
+	
+	
+	let icon = button.querySelector("i.fa");
+	let counter = button
+	  .querySelector("i.vote-number");
+	
+	let n = 0;
+	switch( buttonClassName ){
+	  case "upvote":
+		n = obj.config.upvotes.length;
+		counter.innerText = n > 0 ? n : "";
+		icon.style.color = obj.config.upvotes.includes(obj.user) ? "green" : "black";
+		break;
+	  case "downvote":
+		n = obj.config.downvotes.length;
+		counter.innerText = n > 0 ? -n : "";
+		icon.style.color = obj.config.downvotes.includes(obj.user) ? "tomato" : "black";
+		break;
+	} // switch
+
+  } // updateVoteCounter
+	
+  
   
   upvote(author){
 	let obj = this;
