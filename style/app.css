@@ -1,0 +1,19 @@
+h1, p, text {
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 60px;
+}
+
+/* Style the buttons */
+button.btn-small {
+	font-family: helvetica;
+	background-color: black;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
