@@ -21,12 +21,13 @@ let template = `
 
 
 export default class AddCommentForm{
-  user = ""
+  _user = ""
 
-  constructor(){
+  constructor(id){
     let obj = this;
 	
 	obj.node = html2element(template);
+	obj.viewid = id;
 	
 	// Author input got omitted because the author also needs to be known when voting on a comment, and I didn't want to implement an input there. That's why now there will be an overall login box that will control everything.
 	obj.commentinput = obj.node.querySelector("textarea.comment");
@@ -62,9 +63,18 @@ export default class AddCommentForm{
     obj.update()
   } // clear
   
+  set user(name){
+	this._user = name;
+	this.update()
+  } // set user
+  
+  get user(){
+	return this._user;
+  } // get user
+  
   get config(){
 	let obj = this;
-	return obj.commentinput.value && obj.user ? {author: obj.user, text: obj.commentinput.value} : false;
+	return obj.commentinput.value && obj.user ? {author: obj.user, viewid: obj.viewid,text: obj.commentinput.value} : false;
   } // config
   
   

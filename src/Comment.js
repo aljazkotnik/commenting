@@ -21,7 +21,8 @@ let template = `
 
 
 export default class Comment{
-  user = "Aljaz"
+  
+  user = "Default User: Aljaz"
 	
   constructor(config){
 	let obj = this;
@@ -32,12 +33,14 @@ export default class Comment{
 	// Fill the template with the options from the config. There must be a comment, and there must be an author.
 	obj.config = config;
 	
+	// Upon creation the author is also the user? True when the user makes them, not otherwise... But the user is updated when the login is initiated.
+	obj.user = obj.config.author;
 	
 	// Fill some options that may not be defined in config.
 	obj.config.time      = config.time ? config.time : Date();
 	obj.config.upvotes   = config.upvotes ? config.upvotes : [];
 	obj.config.downvotes = config.downvotes ? config.downvotes : [];
-	
+	obj.config.tags      = config.tags ? config.tags : [];
 	
 	// Modify the node to reflect the config.
 	let header = obj.node.querySelector("div.header");
@@ -61,6 +64,11 @@ export default class Comment{
 	} // onclick
 	
   } // constructor
+  
+  get id(){
+	let obj = this;
+	return [obj.config.viewid, obj.config.author, obj.config.time].join(" ");
+  } // get id
   
   update(){
 	// Only the time is allowed to be updated (if it will be calculated back), and the up and down votes.
@@ -132,7 +140,7 @@ export default class Comment{
   } // updateVoteCounter
 	
   
-  
+  // Maybe these should also allow the neutering of an upvote/downvote?
   upvote(author){
 	let obj = this;
 	pushValueToAWhichCompetesWithB(author, obj.config.upvotes, obj.config.downvotes);

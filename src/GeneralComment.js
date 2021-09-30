@@ -2,6 +2,11 @@ import { html2element } from "./helpers.js";
 import Comment from "./Comment.js";
 import ReplyComment from "./ReplyComment.js";
 
+// If a general comment owns its replies, then keeping the replies in control is easy. What happens when someone else make a reply on a separate client though, and the data is just pushed to this client? How should the reply be added to the right parent? Maybe the reply should have an identifier that can be constructed from the comment (e.g. view id + author name + time), and that can be used to merge the comments. Then everytime a comment is pushed to the storage an update can be fired? Also, how will the changes be communicated back to the server? Let the backend handle the updates - just find the comment with the proper id, and resolve the differences, and then push any comments that had differences. Maybe it's simpler to just adjust everything when the connection closes?
+
+// Sort the comments before passing them to the comments below. How will replies be updated? Ultimately everything should be coming from the server??
+
+
 // This is just a template for the controls which allow the replies to be expanded or collapsed. These are invisible at first.
 let template = `
 <div style="display: none;">
@@ -15,6 +20,9 @@ let template = `
 
 // Maybe the general comments can be added on top, but the replies should follow in chronological order.
 export default class GeneralComment extends Comment{
+  
+  replies = [];
+  
   constructor(config){
     super(config)
 	let obj = this;
@@ -30,7 +38,7 @@ export default class GeneralComment extends Comment{
 		obj.update();
 	} // onclick
 	
-	obj.config.replies = config.replies ? config.replies : [];
+	// Replies on the config need to be initialised. But actually, they should be stored as separate entries for ease of updating...
 	
 	obj.update();
   } // constructor
@@ -39,10 +47,14 @@ export default class GeneralComment extends Comment{
 	let obj = this;
 	
 	// Make a comment node, and append it to this comment.
+	replyconfig.parentid = obj.id;
 	let r = new ReplyComment(replyconfig);
-	obj.config.replies.push(r);
 	obj.replynode.querySelector("div.replies").appendChild(r.node);
 	
+	// Store both the object needed for interactivity and the config needed for saving.
+	obj.replies.push(r);
+	
+	// Update the view.
 	obj.update();
   } // reply
   
@@ -63,8 +75,8 @@ export default class GeneralComment extends Comment{
 	let obj = this;
 	
 	// First update is called when the superclass constructor is called.
-	if(obj.config.replies){
-	  let n = obj.config.replies.length;
+	if(obj.replies){
+	  let n = obj.replies.length;
 	  obj.replynode.style.display = n > 0 ? "" : "none";
 	
 	  // View replies or hide replies

@@ -9,7 +9,7 @@ export default class ReplyComment extends Comment{
 	// The secondary comments need to be indented.
 	obj.node.style.marginLeft = "20px";
 	
-	// Replies can't be replied to.
+	// Replies can't be replied to. Maybe allow them too, but just put a hashtagged name in front?
 	obj.node.querySelector("button.reply").remove();
 	
   } // constructor
