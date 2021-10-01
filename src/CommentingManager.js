@@ -7,10 +7,11 @@ import DiscussionSelector from "./DiscussionSelector.js";
 let template = `
 <div class="commenting" style="width:300px;">
   <div class="hideShowText" style="cursor: pointer; margin-bottom: 5px; color: gray;">
-    <b>Show comments</b>
+    <b class="text">Show comments</b>
+	<b class="counter"></b>
 	<i class="fa fa-caret-down"></i>
   </div>
-  <div class="hideShowWrapper" style="display: none;">
+  <div class="commentingWrapper" style="display: none;">
     <div class="comment-form"></div>
     <hr>
     <div class="comment-tags"></div>
@@ -39,9 +40,8 @@ export default class CommentingManager{
 	  if(config){
 	    // The form should only be cleared if a comment was successfully added.
 	    config.tags = obj.discussion.selected.map(d=>d);
-		let c = obj.add(config);
+		obj.add(config);
 	    obj.form.clear();
-		console.log(c)
 	  } // if
     } // onclick
 	
@@ -62,16 +62,15 @@ export default class CommentingManager{
 	
 	
 	// Finally add teh controls that completely hide comments.
-	let hstext = obj.node.querySelector("div.hideShowText").querySelector("b");
-	let hsicon = obj.node.querySelector("div.hideShowText").querySelector("i");
-	let hsdiv = obj.node.querySelector("div.hideShowWrapper");
-	hstext.onclick = function(){
-	  let hidden = hsdiv.style.display == "none";
-	  hsdiv.style.display = hidden ? "" : "none";
+	let hsdiv = obj.node.querySelector("div.hideShowText");
+	let cdiv = obj.node.querySelector("div.commentingWrapper");
+	hsdiv.onclick = function(){
+	  let hidden = cdiv.style.display == "none";
+	  cdiv.style.display = hidden ? "" : "none";
 	  
 	  // It changed from hidden to show, but hidden is past state.
-	  hstext.innerText = hidden ? "Hide comments" : "Show comments";
-	  hsicon.classList.value = hidden ? "fa fa-caret-up" : "fa fa-caret-down";
+	  hsdiv.querySelector("b.text").innerText = hidden ? "Hide comments" : "Show comments";
+	  hsdiv.querySelector("i").classList.value = hidden ? "fa fa-caret-up" : "fa fa-caret-down";
 	} // onclick
 	
   } // constructor
@@ -86,35 +85,94 @@ export default class CommentingManager{
 	}) // forEach
   } // hideNonDiscussionComments
   
+  
+  updateCommentCounter(){
+	let obj = this;
+	
+	let n = obj.comments.reduce((acc,c)=>{
+		acc += 1
+		acc += c.replies.length;
+		return acc
+	},0)
+	let counterNode = obj.node
+	  .querySelector("div.hideShowText")
+	  .querySelector("b.counter");
+	counterNode.innerText = n ? `(${n})` : "";
+	
+  } // updateCommentCounter
+  
+  
   add(config){
 	// When the comments are loaded from the server they will be added through this interface. Therefore it must handle both the primary and secondary comments.
 	let obj = this;
 	
 	if(config.parentid){
 	  // Comments that have a parent id are replies. Find the right parent comment.
-	  let parent = findArrayItemById(obj.comments, config.parentid);
-	  if(parent){
-		parent.reply(config);
-	  } // if
+	  obj.addReplyComment(config);
 	} else {
-	  // It's a general comment
-	  let c = new GeneralComment(config);
+	  // It's a general comment. 
+	  obj.addGeneralComment(config);
+	} // if
+	
+	// Update the comments count.
+	obj.updateCommentCounter();
+  } // add
+  
+  addReplyComment(config){
+	let obj = this;
+	
+	let parent = findArrayItemById(obj.comments, config.parentid);
+	if(parent){
+	  parent.reply(config);
+	} // if
+  } // addReplyComment
+  
+  addGeneralComment(config){
+	let obj = this;
+	  
+	// If there is an existing one, that one should be updated. Whatever is coming from the server is the truth. Maybe it'll be simpler just to replace the comment in that case?? The comment config does not contain hte comment id, which is computed....
+	
+	
+	// Generally new comments should be attached at teh top. Here the attachment point is variable to reuse this method as a way to replace an existing comment with the same id.
+	
+	
+	let c = new GeneralComment(config);
+	
+	// Remove the existing one, and replace it with the current one.
+	let existing = findArrayItemById(obj.comments, c.id)
+	if(existing){
+	  obj.replaceGeneralComment(existing, c);
+	} else {
+		
 	  obj.comments.push(c);
 	  
 	  // Add the functionality to add secondary comments:
 	  c.node.querySelector("button.reply").onclick = function(){
-		if(obj.form.config){
-		    c.reply(obj.form.config);
-		    obj.form.clear();
-		} // if
+	    if(obj.form.config){
+		  c.reply(obj.form.config);
+		  obj.form.clear();
+	    } // if
 	  } // onclick
 	
 	  // Insert the new comment at teh very top.
 	  let container = obj.node.querySelector("div.comments");
 	  container.insertBefore(c.node, container.firstChild);
-	  return c;
 	} // if
-  } // add
+  } // addGeneralComment
+  
+  
+  replaceGeneralComment(existing, replacement){
+	// For simplicity handle the replacing of hte comment here.
+	let obj = this;
+	
+	// Update the internal comments store.
+	obj.comments.splice(obj.comments.indexOf(existing), 1, replacement);
+	
+	// Update teh DOM.
+	let container = obj.node.querySelector("div.comments");
+	container.insertBefore(replacement.node, existing.node);
+  } // replaceGeneralComment
+  
   
   set user(name){
 	let obj = this;

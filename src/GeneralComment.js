@@ -44,19 +44,38 @@ export default class GeneralComment extends Comment{
   } // constructor
   
   reply(replyconfig){
+	// Replies can also need to be updated if the server pushes an updated version. In that case handle the replacement here.
 	let obj = this;
 	
 	// Make a comment node, and append it to this comment.
 	replyconfig.parentid = obj.id;
 	let r = new ReplyComment(replyconfig);
-	obj.replynode.querySelector("div.replies").appendChild(r.node);
 	
-	// Store both the object needed for interactivity and the config needed for saving.
-	obj.replies.push(r);
+	let existing = findArrayItemById(obj.replies, r.id);
+	if(existing){
+	  obj.replaceReply(existing, r);
+	} else {
+	  // Add this one at the end.
+	  obj.replynode.querySelector("div.replies").appendChild(r.node);
+	  obj.replies.push(r);	
+	} // if
 	
 	// Update the view.
 	obj.update();
   } // reply
+  
+  replaceReply(existing, replacement){
+	// For simplicity handle the replacing of hte comment here.
+	let obj = this;
+	
+	// Update the internal comments store.
+	obj.replies.splice(obj.replies.indexOf(existing), 1, replacement);
+	
+	// Update teh DOM.
+	let container = obj.node.querySelector("div.replies");
+	container.insertBefore(replacement.node, existing.node);
+  } // replaceReply
+  
   
   update(){
 	// Only the time is allowed to be updated (if it will be calculated back), and the up and down votes.
@@ -96,3 +115,11 @@ export default class GeneralComment extends Comment{
   } // updateReplies
   
 } // GeneralComment
+
+function findArrayItemById(A, id){
+  let candidates = A.filter(a=>{
+	return a.id == id;
+  }) // filter
+  
+  return candidates.length > 0 ? candidates[0] : false;
+} // findArrayItemById

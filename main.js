@@ -9,8 +9,7 @@
 	   The width of the commenting should be kept at the width of the view element.
    DONE - Tags to differentiate discussions!
    DONE - Scrollable comments.
-   
-   - make dataset comments more informative.
+   DONE - make dataset comments more informative.
 */
 
 import CommentingManager from "./src/CommentingManager.js";
@@ -79,11 +78,17 @@ testComments.sort(sortCommentsBeforePushing).forEach(comment=>{
 
 
 
+// These are the comments that the server would push after another client changed the comment. This could also be a brand new comment, so it should be processed through the add API.
+let updateComments = [
+{author: "Aljaz", viewid: "0", time: "Thu Sep 30 2021 17:00:00 GMT+0100 (British Summer Time)", text: "Hi! This is an introduction to the comment system. These introductory comments are loaded from an external database that emulates the server response. Note that different items have different comments. To submit comments use the comment form, which can be seen above the horizontal line. To make a comment login in the top right corner of the screen by typing in an alias, and enter some text into the form. A submit button will appear.", upvotes: ["u0", "u1", "u2", "u3", "u4"]},
+
+{author: "Aljaz", viewid: "0", time: "Thu Sep 30 2021 16:00:01 GMT+0100 (British Summer Time)", text: "Contrary to general comments, the replies appear in chronological order, with the oldest at the top, and the newest at the bottom.", parentid: "0 Aljaz Thu Sep 30 2021 16:00:00 GMT+0100 (British Summer Time)", upvotes: ["u0", "u1", "u2", "u3", "u4"]}
+]
 
 
+// If a whole comment is sent over, how will the server resolve the differences? For example, two users upvote closely together, such that the server has not managed to push changes in between. Now change number 2 doesn't include change number 1, and thus change number 1 will be eliminated. Maybe just send the deltas over when updating? Still keep the local update though, so that frequent pushing from the server is unnecessary. Then the server CAN pass the whole comment back.
 
-
-console.log(allCommentingManagers)
+console.log(allCommentingManagers, updateComments)
 
 
 
