@@ -1,19 +1,46 @@
 import { html2element } from "./helpers.js";
 
+let css = {
+	
+  button: `
+    border: none;
+	background-color: white;
+	cursor: pointer;
+  `,
+	
+  replybutton: `
+    color: gray;
+	padding: 0 0 0 0;
+  `,
+  
+  votenumberi: `
+    margin-left: 4px;
+  `,
+  
+  timestampspan: `
+    color: gray;
+	font-size: 14px;
+	margin-left: 12px;
+  `
+}; // css
+
 let template = `
 <div class="comment">
-  <div class="header"><b class="author"></b><span class="timestamp"></span></div>
+  <div class="header">
+    <b class="author"></b>
+	<span class="timestamp" style="${ css.timestampspan }"></span>
+  </div>
   <div class="body"></div>
   <div class="footer">
-    <button class="upvote">
+    <button class="upvote" style="${ css.button }">
 	  <i class="fa fa-thumbs-up"></i>
 	  <i class="vote-number"></i>
 	</button>
-	<button class="downvote">
+	<button class="downvote" style="${ css.button }">
 	  <i class="fa fa-thumbs-down"></i>
-	  <i class="vote-number"></i>
+	  <i class="vote-number" style="${ css.votenumberi }"></i>
 	</button>
-	<button class="reply"><b>REPLY</b></button>
+	<button class="reply" style="${css.button} ${ css.replybutton }"><b>REPLY</b></button>
   </div>
 </div>
 `; // template

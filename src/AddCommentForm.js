@@ -3,19 +3,28 @@ import { html2element } from "./helpers.js";
 /*
 Maybe this one should be remade into a manager so it can keep add comments to itself. Otherwise they have to be routed outside.
 */
-let css = `
-width: 100%;
-border: none;
-resize: none;
-overflow: hidden;
-max-height: 100px;
-`
+let css = {
+  textarea: `
+    width: 100%;
+    border: none;
+    resize: none;
+    overflow: hidden;
+    max-height: 100px;
+  `,
+
+  submitbutton: `
+    color: white;
+	background-color: black;
+	border-radius: 4px;
+  `
+}; // css
+
 
 
 let template = `
 <div>
-  <textarea class="comment" type="text" rows="1" placeholder="What do you think?" style="${css}"></textarea>
-  <button class="submit"><b>Submit</b></button>
+  <textarea class="comment" type="text" rows="1" placeholder="What do you think?" style="${css.textarea}"></textarea>
+  <button class="submit" style="${css.submitbutton}"><b>Submit</b></button>
 </div>
 `; // template
 
